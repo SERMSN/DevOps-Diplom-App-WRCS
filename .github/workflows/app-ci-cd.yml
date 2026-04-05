@@ -7,8 +7,11 @@ on:
     tags:
       - "v*"
     paths:
-      - "app/**"
-      - "k8s/app/**"
+      - ".dockerignore"
+      - "Dockerfile"
+      - "index.html"
+      - "nginx.conf"
+      - "k8s/**"
       - ".github/workflows/app-ci-cd.yml"
   workflow_dispatch:
 
@@ -89,7 +92,7 @@ jobs:
           docker build \
             -t "${IMAGE_URI}:latest" \
             -t "${IMAGE_URI}:${{ steps.meta.outputs.image_tag }}" \
-            ./app
+            .
 
       - name: Push image
         shell: bash
@@ -107,7 +110,7 @@ jobs:
       - name: Deploy manifests
         shell: bash
         run: |
-          kubectl apply -f k8s/app/
+          kubectl apply -f k8s/
           kubectl set image deployment/"$K8S_DEPLOYMENT" \
             "$K8S_CONTAINER"="${IMAGE_URI}:${{ steps.meta.outputs.image_tag }}" \
             -n "$K8S_NAMESPACE"
