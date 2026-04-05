@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Netology DevOps Diploma</title>
+    <style>
+      :root {
+        --bg-top: #f6f1e7;
+        --bg-bottom: #d8e7ef;
+        --paper: rgba(255, 252, 246, 0.88);
+        --ink: #172029;
+        --muted: #53606c;
+        --line: rgba(23, 32, 41, 0.08);
+        --accent: #d25e2b;
+        --accent-soft: #f3b56a;
+        --emerald: #2f7a67;
+        --shadow: 0 24px 70px rgba(25, 43, 52, 0.14);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(243, 181, 106, 0.45), transparent 32%),
+          radial-gradient(circle at bottom right, rgba(47, 122, 103, 0.22), transparent 24%),
+          linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .shell {
+        width: min(1120px, 100%);
+        background: var(--paper);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+        border-radius: 28px;
+        overflow: hidden;
+        backdrop-filter: blur(10px);
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 24px;
+        padding: 48px;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(210, 94, 43, 0.08);
+        color: var(--accent);
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .badge::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+        box-shadow: 0 0 0 6px rgba(210, 94, 43, 0.12);
+      }
+
+      h1 {
+        margin: 22px 0 16px;
+        font-size: clamp(40px, 7vw, 76px);
+        line-height: 0.96;
+        letter-spacing: -0.04em;
+      }
+
+      .lead {
+        max-width: 640px;
+        margin: 0;
+        font-size: clamp(18px, 2.2vw, 22px);
+        line-height: 1.55;
+        color: var(--muted);
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .chip {
+        padding: 12px 16px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.65);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .panel {
+        position: relative;
+        min-height: 100%;
+        padding: 24px;
+        border-radius: 24px;
+        color: #fff9ef;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 25%),
+          linear-gradient(145deg, #183847, #244f53 55%, #275b49);
+      }
+
+      .panel::after {
+        content: "";
+        position: absolute;
+        inset: auto -10% -18% 35%;
+        height: 220px;
+        background: radial-gradient(circle, rgba(243, 181, 106, 0.42), transparent 58%);
+        pointer-events: none;
+      }
+
+      .panel-title {
+        margin: 0;
+        font-size: 15px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255, 249, 239, 0.72);
+      }
+
+      .metrics {
+        display: grid;
+        gap: 14px;
+        margin-top: 22px;
+      }
+
+      .metric {
+        padding: 16px 18px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 13px;
+        color: rgba(255, 249, 239, 0.72);
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      .metric span {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 0 48px 36px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .footer a {
+        color: var(--emerald);
+        text-decoration: none;
+        font-weight: 700;
+      }
+
+      @media (max-width: 900px) {
+        .hero {
+          grid-template-columns: 1fr;
+          padding: 32px;
+        }
+
+        .footer {
+          flex-direction: column;
+          padding: 0 32px 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero">
+        <div>
+          <div class="badge">Diploma Environment</div>
+          <h1>Netology DevOps Platform</h1>
+          <p class="lead">
+            Тестовое приложение для дипломного проекта. Развернуто в Kubernetes,
+            опубликовано через Ingress NGINX и подготовлено для дальнейшей
+            автоматизации через CI/CD.
+          </p>
+          <div class="chips">
+            <div class="chip">Yandex Cloud</div>
+            <div class="chip">Managed Kubernetes</div>
+            <div class="chip">Ingress NGINX</div>
+            <div class="chip">Prometheus + Grafana</div>
+          </div>
+        </div>
+
+        <aside class="panel">
+          <p class="panel-title">Deployment Snapshot</p>
+          <div class="metrics">
+            <div class="metric">
+              <strong>Application</strong>
+              <span>nginx static frontend</span>
+            </div>
+            <div class="metric">
+              <strong>Release Channel</strong>
+              <span>Managed K8s / STABLE</span>
+            </div>
+            <div class="metric">
+              <strong>Delivery Goal</strong>
+              <span>Build, Push, Deploy</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="footer">
+        <div>Страница подготовлена для демонстрации дипломного стенда.</div>
+        <div>Monitoring: <a href="http://grafana.158.160.203.226.nip.io">Grafana</a></div>
+      </section>
+    </main>
+  </body>
+</html>

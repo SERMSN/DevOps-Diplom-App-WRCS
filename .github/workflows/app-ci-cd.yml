@@ -1,0 +1,114 @@
+name: App CI/CD
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - "v*"
+    paths:
+      - "app/**"
+      - "k8s/app/**"
+      - ".github/workflows/app-ci-cd.yml"
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: diploma-app
+  K8S_NAMESPACE: app
+  K8S_DEPLOYMENT: diploma-app
+  K8S_CONTAINER: diploma-app
+
+jobs:
+  build-push-deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set image tag
+        id: meta
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            echo "image_tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          else
+            echo "image_tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Yandex Cloud CLI
+        shell: bash
+        run: |
+          curl -fsSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | \
+            bash -s -- -i "$HOME/yandex-cloud" -n
+          echo "$HOME/yandex-cloud/bin" >> "$GITHUB_PATH"
+
+      - name: Configure Yandex Cloud
+        shell: bash
+        env:
+          YC_TOKEN: ${{ secrets.YC_TOKEN }}
+          YC_CLOUD_ID: ${{ secrets.YC_CLOUD_ID }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+        run: |
+          test -n "$YC_TOKEN"
+          test -n "$YC_CLOUD_ID"
+          test -n "$YC_FOLDER_ID"
+          yc config set token "$YC_TOKEN"
+          yc config set cloud-id "$YC_CLOUD_ID"
+          yc config set folder-id "$YC_FOLDER_ID"
+          yc iam create-token >/dev/null
+
+      - name: Validate deployment secrets
+        shell: bash
+        env:
+          YC_K8S_CLUSTER_ID: ${{ secrets.YC_K8S_CLUSTER_ID }}
+          YC_REGISTRY_ID: ${{ secrets.YC_REGISTRY_ID }}
+        run: |
+          test -n "$YC_K8S_CLUSTER_ID"
+          test -n "$YC_REGISTRY_ID"
+
+      - name: Export image coordinates
+        shell: bash
+        env:
+          YC_REGISTRY_ID: ${{ secrets.YC_REGISTRY_ID }}
+        run: |
+          echo "REGISTRY_ID=$YC_REGISTRY_ID" >> "$GITHUB_ENV"
+          echo "IMAGE_URI=cr.yandex/$YC_REGISTRY_ID/$IMAGE_NAME" >> "$GITHUB_ENV"
+
+      - name: Configure Docker auth for Yandex Container Registry
+        shell: bash
+        run: |
+          yc container registry configure-docker
+
+      - name: Build image
+        shell: bash
+        run: |
+          docker build \
+            -t "${IMAGE_URI}:latest" \
+            -t "${IMAGE_URI}:${{ steps.meta.outputs.image_tag }}" \
+            ./app
+
+      - name: Push image
+        shell: bash
+        run: |
+          docker push "${IMAGE_URI}:latest"
+          docker push "${IMAGE_URI}:${{ steps.meta.outputs.image_tag }}"
+
+      - name: Fetch kubeconfig
+        shell: bash
+        env:
+          YC_K8S_CLUSTER_ID: ${{ secrets.YC_K8S_CLUSTER_ID }}
+        run: |
+          yc managed-kubernetes cluster get-credentials --id "$YC_K8S_CLUSTER_ID" --external --force
+
+      - name: Deploy manifests
+        shell: bash
+        run: |
+          kubectl apply -f k8s/app/
+          kubectl set image deployment/"$K8S_DEPLOYMENT" \
+            "$K8S_CONTAINER"="${IMAGE_URI}:${{ steps.meta.outputs.image_tag }}" \
+            -n "$K8S_NAMESPACE"
+          kubectl rollout status deployment/"$K8S_DEPLOYMENT" -n "$K8S_NAMESPACE" --timeout=180s
