@@ -3,18 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Netology DevOps App</title>
+    <title>DevOps Delivery Board</title>
     <style>
       :root {
-        --bg: #f3f6f8;
-        --surface: #ffffff;
-        --surface-soft: #eef4f6;
-        --text: #14212b;
-        --muted: #5d6b75;
-        --line: #d8e3e8;
-        --accent: #0f766e;
-        --accent-soft: #d7f3ef;
-        --shadow: 0 18px 45px rgba(20, 33, 43, 0.08);
+        --bg-top: #08111f;
+        --bg-mid: #10233c;
+        --bg-bottom: #1d4c63;
+        --panel: rgba(7, 15, 29, 0.72);
+        --panel-soft: rgba(255, 255, 255, 0.08);
+        --line: rgba(255, 255, 255, 0.12);
+        --text: #ecf7ff;
+        --muted: #b8d0de;
+        --accent: #72f2c0;
+        --accent-2: #7bc8ff;
+        --warning: #ffd36d;
+        --shadow: 0 30px 80px rgba(0, 0, 0, 0.34);
       }
 
       * {
@@ -23,142 +26,325 @@
 
       body {
         margin: 0;
-        font-family: "Segoe UI", Tahoma, sans-serif;
+        min-height: 100vh;
+        font-family: "Trebuchet MS", "Segoe UI", sans-serif;
         color: var(--text);
-        background: linear-gradient(180deg, #f7fafb 0%, var(--bg) 100%);
+        background:
+          radial-gradient(circle at top left, rgba(123, 200, 255, 0.18), transparent 28%),
+          radial-gradient(circle at 85% 20%, rgba(114, 242, 192, 0.2), transparent 24%),
+          linear-gradient(160deg, var(--bg-top) 0%, var(--bg-mid) 45%, var(--bg-bottom) 100%);
+      }
+
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        inset: auto;
+        border-radius: 999px;
+        filter: blur(110px);
+        opacity: 0.45;
+        pointer-events: none;
+      }
+
+      body::before {
+        top: 40px;
+        left: -80px;
+        width: 240px;
+        height: 240px;
+        background: rgba(123, 200, 255, 0.26);
+      }
+
+      body::after {
+        right: -60px;
+        bottom: 20px;
+        width: 260px;
+        height: 260px;
+        background: rgba(114, 242, 192, 0.22);
       }
 
       .page {
-        max-width: 1120px;
+        width: min(1180px, calc(100% - 32px));
         margin: 0 auto;
-        padding: 32px 20px 48px;
+        padding: 28px 0 40px;
+      }
+
+      .shell {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        background: linear-gradient(180deg, rgba(8, 18, 34, 0.82), rgba(10, 23, 43, 0.64));
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(12px);
+      }
+
+      .shell::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(transparent 95%, rgba(255, 255, 255, 0.05) 96%),
+          linear-gradient(90deg, transparent 95%, rgba(255, 255, 255, 0.05) 96%);
+        background-size: 34px 34px;
+        opacity: 0.22;
+        pointer-events: none;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .dots {
+        display: flex;
+        gap: 8px;
+      }
+
+      .dots span {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .dots span:nth-child(1) {
+        background: #ff7b72;
+      }
+
+      .dots span:nth-child(2) {
+        background: #ffd36d;
+      }
+
+      .dots span:nth-child(3) {
+        background: #72f2c0;
+      }
+
+      .topbar-code {
+        color: var(--muted);
+        font-size: 13px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
       }
 
       .hero {
         display: grid;
-        gap: 20px;
-        grid-template-columns: 2fr 1fr;
-        align-items: stretch;
+        grid-template-columns: 1.5fr 0.9fr;
+        gap: 22px;
+        padding: 26px;
       }
 
-      .card {
-        background: var(--surface);
+      .panel {
+        position: relative;
         border: 1px solid var(--line);
         border-radius: 24px;
-        box-shadow: var(--shadow);
+        background: var(--panel);
+        backdrop-filter: blur(8px);
       }
 
-      .intro {
-        padding: 32px;
+      .hero-main {
+        padding: 30px;
       }
 
-      .label {
-        display: inline-block;
-        padding: 8px 12px;
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 14px;
         border-radius: 999px;
-        background: var(--accent-soft);
+        background: rgba(114, 242, 192, 0.12);
+        border: 1px solid rgba(114, 242, 192, 0.26);
         color: var(--accent);
         font-size: 13px;
         font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.08em;
       }
 
       h1 {
-        margin: 18px 0 14px;
-        font-size: clamp(34px, 6vw, 60px);
-        line-height: 1;
-        letter-spacing: -0.04em;
+        margin: 20px 0 16px;
+        max-width: 760px;
+        font-size: clamp(40px, 7vw, 76px);
+        line-height: 0.95;
+        letter-spacing: -0.05em;
       }
 
       .lead {
+        max-width: 720px;
         margin: 0;
-        max-width: 640px;
         color: var(--muted);
-        font-size: 18px;
-        line-height: 1.6;
+        font-size: 19px;
+        line-height: 1.7;
       }
 
-      .stack {
+      .lead strong {
+        color: var(--text);
+      }
+
+      .terminal {
+        margin-top: 24px;
+        padding: 18px 20px;
+        border: 1px solid rgba(123, 200, 255, 0.16);
+        border-radius: 18px;
+        background: rgba(4, 10, 20, 0.72);
+        font-family: "Courier New", monospace;
+        font-size: 15px;
+        line-height: 1.8;
+        color: #d8f5ff;
+      }
+
+      .terminal .ok {
+        color: var(--accent);
+      }
+
+      .terminal .warn {
+        color: var(--warning);
+      }
+
+      .chips {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
-        margin-top: 24px;
+        margin-top: 22px;
       }
 
-      .stack span {
+      .chip {
         padding: 10px 14px;
-        background: var(--surface-soft);
         border: 1px solid var(--line);
-        border-radius: 14px;
+        border-radius: 999px;
+        background: var(--panel-soft);
+        color: var(--text);
         font-size: 14px;
-        font-weight: 600;
+        font-weight: 700;
       }
 
-      .status {
-        padding: 28px;
-        background: linear-gradient(180deg, #11333d 0%, #174856 100%);
-        color: #eef8fb;
+      .hero-side {
+        display: grid;
+        gap: 18px;
       }
 
-      .status h2 {
-        margin: 0 0 18px;
-        font-size: 18px;
-        letter-spacing: 0.03em;
+      .status-card,
+      .release-card {
+        padding: 24px;
       }
 
-      .status-grid {
+      .card-title {
+        margin: 0 0 16px;
+        font-size: 15px;
+        color: var(--accent-2);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .status-list {
         display: grid;
         gap: 12px;
       }
 
       .status-item {
         padding: 14px 16px;
-        border-radius: 16px;
-        background: rgba(255, 255, 255, 0.08);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
       }
 
       .status-item small {
         display: block;
         margin-bottom: 6px;
-        color: rgba(238, 248, 251, 0.72);
+        color: var(--muted);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.08em;
       }
 
       .status-item strong {
         font-size: 20px;
       }
 
-      .blocks {
+      .release-mark {
+        margin: 0 0 12px;
+        font-family: "Courier New", monospace;
+        color: var(--warning);
+        font-size: 14px;
+      }
+
+      .release-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .metrics {
         display: grid;
-        gap: 20px;
-        grid-template-columns: repeat(3, 1fr);
-        margin-top: 20px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        padding: 0 26px 26px;
       }
 
-      .block {
-        padding: 24px;
+      .metric {
+        padding: 20px;
       }
 
-      .block h3 {
-        margin: 0 0 10px;
-        font-size: 20px;
+      .metric small {
+        display: block;
+        margin-bottom: 10px;
+        color: var(--muted);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
       }
 
-      .block p {
+      .metric strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 24px;
+      }
+
+      .metric p {
         margin: 0;
         color: var(--muted);
         line-height: 1.6;
       }
 
+      .flow {
+        padding: 0 26px 26px;
+      }
+
+      .flow-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+
+      .flow-card {
+        padding: 20px;
+      }
+
+      .flow-step {
+        margin: 0 0 10px;
+        color: var(--accent);
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+      }
+
+      .flow-card h3 {
+        margin: 0 0 10px;
+        font-size: 21px;
+      }
+
+      .flow-card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
       .footer {
         display: flex;
+        align-items: center;
         justify-content: space-between;
         gap: 16px;
-        margin-top: 20px;
-        padding: 18px 24px;
-        font-size: 14px;
+        padding: 20px 26px 28px;
         color: var(--muted);
       }
 
@@ -168,95 +354,195 @@
         font-weight: 700;
       }
 
-      @media (max-width: 920px) {
+      .footer strong {
+        color: var(--text);
+      }
+
+      @media (max-width: 1080px) {
         .hero,
-        .blocks {
+        .metrics,
+        .flow-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 760px) {
+        .page {
+          width: min(100% - 20px, 1180px);
+          padding: 14px 0 24px;
+        }
+
+        .hero,
+        .metrics,
+        .flow-grid {
           grid-template-columns: 1fr;
+        }
+
+        .hero,
+        .metrics,
+        .flow,
+        .footer {
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+
+        .hero-main,
+        .status-card,
+        .release-card,
+        .metric,
+        .flow-card {
+          padding: 18px;
         }
 
         .footer {
           flex-direction: column;
+          align-items: flex-start;
         }
       }
     </style>
   </head>
   <body>
     <div class="page">
-      <section class="hero">
-        <article class="card intro">
-          <span class="label">Release v1.0.2</span>
-          <h1>Pipeline Release 1.0.2</h1>
-          <p class="lead">
-            Версия страницы для проверки релизного сценария: выкладка по тегу
-            <strong>v1.0.2</strong> и автоматический rollout в Kubernetes.
-            Изменение должно появиться в кластере автоматически без ручного
-            деплоя.
-          </p>
-          <div class="stack">
-            <span>Yandex Cloud</span>
-            <span>Managed Kubernetes</span>
-            <span>Ingress NGINX</span>
-            <span>GitHub Actions</span>
-            <span>Tag Deploy v*</span>
+      <main class="shell">
+        <div class="topbar">
+          <div class="dots">
+            <span></span>
+            <span></span>
+            <span></span>
           </div>
-        </article>
-
-        <aside class="card status">
-          <h2>Deployment State</h2>
-          <div class="status-grid">
-            <div class="status-item">
-              <small>Application</small>
-              <strong>nginx static app</strong>
-            </div>
-            <div class="status-item">
-              <small>Pipeline</small>
-              <strong>build -> push -> deploy</strong>
-            </div>
-            <div class="status-item">
-              <small>Release Channel</small>
-              <strong>tag: v1.0.2</strong>
-            </div>
-            <div class="status-item">
-              <small>Monitoring</small>
-              <strong>Grafana online</strong>
-            </div>
-          </div>
-        </aside>
-      </section>
-
-      <section class="blocks">
-        <article class="card block">
-          <h3>Simple Delivery</h3>
-          <p>
-            Репозиторий приложения отделен от инфраструктуры и используется как
-            самостоятельный источник сборки и публикации образа.
-          </p>
-        </article>
-
-        <article class="card block">
-          <h3>Tag Release v1.0.2</h3>
-          <p>
-            Этот блок изменен специально для проверки выкладки по тегу:
-            сборка, push в registry с меткой версии и rollout в Kubernetes.
-          </p>
-        </article>
-
-        <article class="card block">
-          <h3>Operations Ready</h3>
-          <p>
-            Приложение опубликовано через Ingress и может быть быстро проверено
-            в браузере вместе с метриками в Grafana.
-          </p>
-        </article>
-      </section>
-
-      <footer class="card footer">
-        <div>Страница подготовлена для проверки релизного деплоя по тегу v1.0.2.</div>
-        <div>
-          Monitoring:
-          <a href="http://grafana.158.160.203.226.nip.io">grafana</a>
+          <div class="topbar-code">devops-board :: release channel online</div>
         </div>
-      </footer>
+
+        <section class="hero">
+          <article class="panel hero-main">
+            <div class="eyebrow">:-) Netology DevOps Diploma / Production Demo</div>
+            <h1>Build. Ship. Observe. Repeat.</h1>
+            <p class="lead">
+              Демонстрационная страница приложения для дипломного стенда.
+              Здесь собран единый контур:
+              <strong>GitHub Actions</strong>,
+              <strong>Yandex Container Registry</strong>,
+              <strong>Managed Kubernetes</strong> и
+              <strong>Grafana monitoring</strong>.
+            </p>
+
+            <div class="terminal">
+              <div><span class="ok">[ OK ]</span> commit pushed -> workflow started</div>
+              <div><span class="ok">[ OK ]</span> docker image built and published</div>
+              <div><span class="ok">[ OK ]</span> kubernetes rollout completed</div>
+              <div><span class="warn">[ ^^ ]</span> metrics visible, service reachable</div>
+            </div>
+
+            <div class="chips">
+              <span class="chip">Terraform</span>
+              <span class="chip">Yandex Cloud</span>
+              <span class="chip">Managed Kubernetes</span>
+              <span class="chip">Ingress NGINX</span>
+              <span class="chip">Prometheus</span>
+              <span class="chip">Grafana</span>
+              <span class="chip">GitHub Actions</span>
+            </div>
+          </article>
+
+          <aside class="hero-side">
+            <section class="panel status-card">
+              <h2 class="card-title">Runtime State</h2>
+              <div class="status-list">
+                <div class="status-item">
+                  <small>App</small>
+                  <strong>diploma-app</strong>
+                </div>
+                <div class="status-item">
+                  <small>Strategy</small>
+                  <strong>build -> push -> deploy</strong>
+                </div>
+                <div class="status-item">
+                  <small>Ingress</small>
+                  <strong>public endpoint enabled</strong>
+                </div>
+                <div class="status-item">
+                  <small>Observability</small>
+                  <strong>metrics online</strong>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel release-card">
+              <h2 class="card-title">Release Note</h2>
+              <p class="release-mark">/^_^\\ current demo page is live</p>
+              <p>
+                Новая страница полностью пересобрана для проверки CI/CD.
+                Изменения должны приезжать в кластер автоматически после нового
+                push или релизного тега.
+              </p>
+            </section>
+          </aside>
+        </section>
+
+        <section class="metrics">
+          <article class="panel metric">
+            <small>Source</small>
+            <strong>GitHub Repo</strong>
+            <p>Изменения в коде запускают автоматическую сборку и выкладку образа.</p>
+          </article>
+
+          <article class="panel metric">
+            <small>Registry</small>
+            <strong>Container Image</strong>
+            <p>Артефакт публикуется в Yandex Container Registry и используется в rollout.</p>
+          </article>
+
+          <article class="panel metric">
+            <small>Cluster</small>
+            <strong>Managed K8s</strong>
+            <p>Приложение работает в Kubernetes с внешним доступом через ingress-nginx.</p>
+          </article>
+
+          <article class="panel metric">
+            <small>Monitor</small>
+            <strong>Grafana + Prometheus</strong>
+            <p>Состояние кластера и сервисов наблюдается через преднастроенный стек мониторинга.</p>
+          </article>
+        </section>
+
+        <section class="flow">
+          <div class="flow-grid">
+            <article class="panel flow-card">
+              <p class="flow-step">01 :: Commit</p>
+              <h3>Code enters pipeline</h3>
+              <p>Разработка приложения отделена от инфраструктуры. Это упрощает релиз и проверку каждого изменения.</p>
+            </article>
+
+            <article class="panel flow-card">
+              <p class="flow-step">02 :: Build</p>
+              <h3>Image becomes artifact</h3>
+              <p>Docker-образ собирается повторяемо и получает релизный тег для дальнейшего использования в кластере.</p>
+            </article>
+
+            <article class="panel flow-card">
+              <p class="flow-step">03 :: Deploy</p>
+              <h3>Cluster updates workload</h3>
+              <p>Kubernetes выполняет rollout приложения и делает новую версию доступной через ingress.</p>
+            </article>
+
+            <article class="panel flow-card">
+              <p class="flow-step">04 :: Observe</p>
+              <h3>Signals stay visible</h3>
+              <p>Метрики, дашборды и сетевой доступ позволяют быстро проверить фактический результат деплоя.</p>
+            </article>
+          </div>
+        </section>
+
+        <footer class="footer">
+          <div>
+            <strong>DEVOPS FLOW:</strong> commit -> action -> registry -> k8s -> monitoring
+          </div>
+          <div>
+            Grafana:
+            <a href="http://grafana.wrcs.su">grafana.wrcs.su</a>
+          </div>
+        </footer>
+      </main>
     </div>
   </body>
 </html>

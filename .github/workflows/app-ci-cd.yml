@@ -20,8 +20,7 @@ env:
   K8S_NAMESPACE: app
   K8S_DEPLOYMENT: diploma-app
   K8S_CONTAINER: diploma-app
-  INGRESS_NAMESPACE: ingress-nginx
-  INGRESS_SERVICE: ingress-nginx-controller
+  APP_HOST_DEFAULT: app.wrcs.su
 
 jobs:
   build-push-deploy:
@@ -101,16 +100,33 @@ jobs:
       - name: Build image
         shell: bash
         run: |
-          docker build \
-            -t "${IMAGE_URI}:latest" \
-            -t "${IMAGE_URI}:${{ steps.meta.outputs.image_tag }}" \
-            .
+          for i in 1 2 3; do
+            if docker build \
+              -t "${IMAGE_URI}:latest" \
+              -t "${IMAGE_URI}:${{ steps.meta.outputs.image_tag }}" \
+              .; then
+              break
+            fi
+            if [[ "$i" -eq 3 ]]; then
+              echo "Docker build failed after 3 attempts" >&2
+              exit 1
+            fi
+            sleep 10
+          done
 
       - name: Push image
         shell: bash
         run: |
-          docker push "${IMAGE_URI}:latest"
-          docker push "${IMAGE_URI}:${{ steps.meta.outputs.image_tag }}"
+          for i in 1 2 3; do
+            if docker push "${IMAGE_URI}:latest" && docker push "${IMAGE_URI}:${{ steps.meta.outputs.image_tag }}"; then
+              break
+            fi
+            if [[ "$i" -eq 3 ]]; then
+              echo "Docker push failed after 3 attempts" >&2
+              exit 1
+            fi
+            sleep 10
+          done
 
       - name: Fetch kubeconfig
         shell: bash
@@ -119,26 +135,15 @@ jobs:
         run: |
           yc managed-kubernetes cluster get-credentials --id "$YC_K8S_CLUSTER_ID" --external --force
 
-      - name: Resolve application host from ingress external IP
-        shell: bash
-        run: |
-          for _ in $(seq 1 30); do
-            INGRESS_IP="$(kubectl get svc "$INGRESS_SERVICE" -n "$INGRESS_NAMESPACE" -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || true)"
-            if [[ -n "$INGRESS_IP" ]]; then
-              echo "APP_HOST=app.${INGRESS_IP}.nip.io" >> "$GITHUB_ENV"
-              exit 0
-            fi
-            sleep 10
-          done
-          echo "Failed to resolve ingress external IP" >&2
-          exit 1
-
       - name: Deploy manifests
         shell: bash
+        env:
+          APP_HOST_SECRET: ${{ secrets.APP_HOST }}
         run: |
+          APP_HOST_VALUE="${APP_HOST_SECRET:-$APP_HOST_DEFAULT}"
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
-          sed "s|__APP_HOST__|$APP_HOST|g" k8s/ingress.yaml | kubectl apply -f -
+          sed "s|__APP_HOST__|$APP_HOST_VALUE|g" k8s/ingress.yaml | kubectl apply -f -
           kubectl set image deployment/"$K8S_DEPLOYMENT" \
             "$K8S_CONTAINER"="${IMAGE_URI}:${{ steps.meta.outputs.image_tag }}" \
             -n "$K8S_NAMESPACE"
