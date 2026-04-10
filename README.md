@@ -45,9 +45,9 @@
 docker build -t diploma-app:local .
 ```
 
-## Release Verification (tag v1.0.2)
+## Release Verification
 
-Ниже короткий сценарий для демонстрации CI/CD на защите.
+Ниже короткий сценарий для демонстрации CI/CD.
 
 ### 1. Проверка push в master
 
