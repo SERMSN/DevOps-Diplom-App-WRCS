@@ -1,1084 +1,1355 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WRCS | DevOps Engineer</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --bg-1: #06111d;
-        --bg-2: #0c2034;
-        --bg-3: #173a51;
-        --panel: rgba(7, 18, 32, 0.72);
-        --panel-soft: rgba(255, 255, 255, 0.06);
-        --line: rgba(255, 255, 255, 0.1);
-        --text: #eef9ff;
-        --muted: #a9c0cf;
-        --accent: #7ef0bb;
-        --accent-2: #78c9ff;
-        --accent-3: #ffd472;
-        --shadow: 0 28px 90px rgba(0, 0, 0, 0.38);
-      }
-
-      body[data-theme="light"] {
-        --bg-1: #f7fbff;
-        --bg-2: #edf5fb;
-        --bg-3: #e4eef6;
-        --panel: rgba(255, 255, 255, 0.86);
-        --panel-soft: rgba(12, 32, 52, 0.04);
-        --line: rgba(18, 32, 51, 0.1);
-        --text: #132235;
-        --muted: #5d7185;
-        --accent: #0a8f73;
-        --accent-2: #0a73d9;
-        --accent-3: #c98916;
-        --shadow: 0 24px 64px rgba(18, 32, 51, 0.08);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-      body {
-        margin: 0;
-        min-height: 100vh;
-        color: var(--text);
-        font-family: "Manrope", "Segoe UI", sans-serif;
-        background:
-          radial-gradient(circle at 12% 12%, rgba(126, 240, 187, 0.18), transparent 22%),
-          radial-gradient(circle at 86% 18%, rgba(120, 201, 255, 0.16), transparent 24%),
-          radial-gradient(circle at 68% 82%, rgba(255, 212, 114, 0.12), transparent 22%),
-          linear-gradient(155deg, var(--bg-1) 0%, var(--bg-2) 46%, var(--bg-3) 100%);
-        overflow-x: hidden;
-      }
-
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        opacity: 0.18;
-        background:
-          linear-gradient(transparent 95%, rgba(255, 255, 255, 0.06) 96%),
-          linear-gradient(90deg, transparent 95%, rgba(255, 255, 255, 0.06) 96%);
-        background-size: 36px 36px;
-      }
-
-      body[data-theme="light"]::before {
-        opacity: 0.08;
-      }
-
-      .matrix-bg {
-        position: fixed;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        opacity: 0.22;
-        z-index: 0;
-      }
-
-      body[data-theme="light"] .matrix-bg {
-        opacity: 0.3;
-      }
-
-      a {
-        color: inherit;
-      }
-
-      .page {
-        position: relative;
-        z-index: 1;
-        width: min(1200px, calc(100% - 28px));
-        margin: 0 auto;
-        padding: 22px 0 36px;
-      }
-
-      .panel {
-        border: 1px solid var(--line);
-        border-radius: 26px;
-        background: var(--panel);
-        box-shadow: var(--shadow);
-        backdrop-filter: blur(14px);
-      }
-
-      .topbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 14px;
-        margin-bottom: 18px;
-        padding: 16px 20px;
-      }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .brand-mark {
-        display: grid;
-        place-items: center;
-        width: 46px;
-        height: 46px;
-        border-radius: 16px;
-        background: linear-gradient(135deg, rgba(126, 240, 187, 0.24), rgba(120, 201, 255, 0.22));
-        border: 1px solid rgba(255, 255, 255, 0.14);
-      }
-
-      .icon {
-        width: 24px;
-        height: 24px;
-        stroke: currentColor;
-        stroke-width: 1.8;
-        fill: none;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-      }
-
-      .icon-lg {
-        width: 30px;
-        height: 30px;
-      }
-
-      .icon-sm {
-        width: 20px;
-        height: 20px;
-      }
-
-      .brand-copy strong {
-        display: block;
-        font-size: 17px;
-        letter-spacing: 0.01em;
-      }
-
-      .brand-copy span {
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      .nav {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      .nav a {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 14px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: var(--panel-soft);
-        text-decoration: none;
-        font-size: 14px;
-        font-weight: 700;
-      }
-
-      .toolbar {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .theme-toggle {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        background: var(--panel-soft);
-      }
-
-      .theme-segment {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 14px;
-        border: 0;
-        border-radius: 999px;
-        background: transparent;
-        color: var(--muted);
-        font: inherit;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
-      }
-
-      .theme-segment.active {
-        background: rgba(255, 255, 255, 0.12);
-        color: var(--text);
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
-      }
-
-      body[data-theme="light"] .theme-segment.active {
-        background: rgba(12, 32, 52, 0.08);
-        box-shadow: inset 0 0 0 1px rgba(18, 32, 51, 0.05);
-      }
-
-      .hero {
-        display: grid;
-        grid-template-columns: 1.45fr 0.95fr;
-        gap: 18px;
-        margin-bottom: 18px;
-      }
-
-      .hero-main,
-      .hero-side {
-        padding: 28px;
-      }
-
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 14px;
-        border-radius: 999px;
-        border: 1px solid rgba(126, 240, 187, 0.28);
-        background: rgba(126, 240, 187, 0.12);
-        color: var(--accent);
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      h1 {
-        margin: 18px 0 14px;
-        max-width: 700px;
-        font-size: clamp(34px, 5.6vw, 58px);
-        line-height: 1.04;
-        letter-spacing: -0.04em;
-      }
-
-      .lead {
-        max-width: 680px;
-        margin: 0;
-        color: var(--muted);
-        font-size: 17px;
-        line-height: 1.75;
-      }
-
-      .lead strong {
-        color: var(--text);
-      }
-
-      .cta-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        margin-top: 24px;
-      }
-
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 13px 18px;
-        border-radius: 18px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.08);
-        text-decoration: none;
-        font-size: 15px;
-        font-weight: 800;
-        letter-spacing: -0.01em;
-      }
-
-      .btn.primary {
-        color: #062018;
-        background: linear-gradient(135deg, var(--accent), #a3ffd8);
-        border-color: transparent;
-      }
-
-      body[data-theme="light"] .btn.primary {
-        color: #ffffff;
-        background: linear-gradient(135deg, #0a8f73, #0a73d9);
-      }
-
-      .terminal {
-        margin-top: 24px;
-        padding: 18px 20px;
-        border-radius: 20px;
-        border: 1px solid rgba(120, 201, 255, 0.18);
-        background: rgba(3, 10, 19, 0.78);
-        font-family: "IBM Plex Mono", "Courier New", monospace;
-        font-size: 14px;
-        line-height: 1.8;
-      }
-
-      body[data-theme="light"] .terminal {
-        border-color: rgba(10, 115, 217, 0.14);
-        background: rgba(246, 250, 255, 0.92);
-      }
-
-      .terminal-line {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .ok {
-        color: var(--accent);
-      }
-
-      .warn {
-        color: var(--accent-3);
-      }
-
-      .side-stack {
-        display: grid;
-        gap: 16px;
-      }
-
-      .mini-card {
-        padding: 18px 18px 20px;
-        border-radius: 22px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.05);
-      }
-
-      .mini-card small {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 10px;
-        color: var(--accent-2);
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      .mini-card strong {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 22px;
-        line-height: 1.2;
-      }
-
-      .mini-card p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 15px;
-        line-height: 1.68;
-      }
-
-      .section-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 18px;
-        margin-bottom: 18px;
-      }
-
-      .card {
-        padding: 24px;
-      }
-
-      .card-tag {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 12px;
-        color: var(--accent);
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      .card h2,
-      .card h3 {
-        margin: 0 0 12px;
-        font-size: 24px;
-        line-height: 1.2;
-      }
-
-      .card p {
-        margin: 0;
-        color: var(--muted);
-        font-size: 16px;
-        line-height: 1.72;
-      }
-
-      .skills {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 18px;
-      }
-
-      .skills span {
-        padding: 10px 13px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.05);
-        font-size: 13px;
-        font-weight: 700;
-      }
-
-      body[data-theme="light"] .mini-card,
-      body[data-theme="light"] .timeline-item,
-      body[data-theme="light"] .contact-list a,
-      body[data-theme="light"] .contact-list div,
-      body[data-theme="light"] .skills span {
-        background: rgba(12, 32, 52, 0.035);
-      }
-
-      .timeline {
-        display: grid;
-        gap: 14px;
-        margin-top: 12px;
-      }
-
-      .timeline-item {
-        padding: 16px 18px;
-        border-radius: 18px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.05);
-      }
-
-      .timeline-item strong {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 6px;
-      }
-
-      .timeline-item p {
-        margin: 0;
-      }
-
-      .wide {
-        display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
-        gap: 18px;
-        margin-bottom: 18px;
-      }
-
-      .quote {
-        font-size: 24px;
-        line-height: 1.4;
-        letter-spacing: -0.03em;
-      }
-
-      .quote strong {
-        color: var(--accent);
-      }
-
-      .contact-list {
-        display: grid;
-        gap: 12px;
-        margin-top: 16px;
-      }
-
-      .contact-list a,
-      .contact-list div {
-        display: block;
-        padding: 14px 16px;
-        border-radius: 18px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.05);
-        text-decoration: none;
-        font-size: 15px;
-      }
-
-      .footer {
-        display: flex;
-        justify-content: space-between;
-        gap: 14px;
-        padding: 18px 22px;
-      }
-
-      .footer span {
-        color: var(--muted);
-        font-size: 14px;
-      }
-
-      @media (max-width: 1024px) {
-        .hero,
-        .wide,
-        .section-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      @media (max-width: 720px) {
-        .page {
-          width: min(100% - 18px, 1200px);
-          padding: 10px 0 22px;
-        }
-
-        .topbar,
-        .hero-main,
-        .hero-side,
-        .card,
-        .footer {
-          padding-left: 16px;
-          padding-right: 16px;
-        }
-
-        .topbar,
-        .footer {
-          flex-direction: column;
-          align-items: flex-start;
-        }
-
-        .hero-main,
-        .hero-side,
-        .card {
-          padding-top: 20px;
-          padding-bottom: 20px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <canvas class="matrix-bg" id="matrix-bg" aria-hidden="true"></canvas>
-    <div class="page">
-      <header class="panel topbar">
-        <div class="brand">
-          <div class="brand-mark">
-            <svg class="icon icon-lg" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3 15c3-8 15-8 18 0"></path>
-              <path d="M4.5 15.5h15"></path>
-              <path d="M8.5 11.5 12 8l3.5 3.5"></path>
-            </svg>
-          </div>
-          <div class="brand-copy">
-            <strong>WRCS</strong>
-            <span>DevOps Engineer / Platform Builder</span>
-          </div>
-        </div>
-        <nav class="nav">
-          <a href="#about">
-            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M15.75 6.75a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"></path>
-              <path d="M4.5 20.25a7.5 7.5 0 0 1 15 0"></path>
-            </svg>
-            About
-          </a>
-          <a href="#stack">
-            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4.75 7.75 12 4l7.25 3.75L12 11.5 4.75 7.75Z"></path>
-              <path d="M4.75 12 12 15.75 19.25 12"></path>
-              <path d="M4.75 16.25 12 20l7.25-3.75"></path>
-            </svg>
-            Stack
-          </a>
-          <a href="#projects">
-            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4.75 6.75h14.5v10.5H4.75z"></path>
-              <path d="M8 17.25h8"></path>
-            </svg>
-            Projects
-          </a>
-          <a href="#contact">
-            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="m4.75 7.25 7.25 5 7.25-5"></path>
-              <path d="M4.75 7.25h14.5v9.5H4.75z"></path>
-            </svg>
-            Contact
-          </a>
-        </nav>
-        <div class="toolbar">
-          <div class="theme-toggle" role="tablist" aria-label="Theme switcher">
-            <button class="theme-segment" type="button" id="theme-dark" aria-label="Dark theme">
-              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M15.25 4.75a7.25 7.25 0 1 0 4 13.3 7 7 0 0 1-4.73 1.7 7.25 7.25 0 0 1 0-14.5 7 7 0 0 1 .73.04Z"></path>
-              </svg>
-              <span>Dark</span>
-            </button>
-            <button class="theme-segment" type="button" id="theme-light" aria-label="Light theme">
-              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 3.75v2.5"></path>
-                <path d="M12 17.75v2.5"></path>
-                <path d="M20.25 12h-2.5"></path>
-                <path d="M6.25 12h-2.5"></path>
-                <path d="M17.83 6.17 16.06 7.94"></path>
-                <path d="m7.94 16.06-1.77 1.77"></path>
-                <path d="m17.83 17.83-1.77-1.77"></path>
-                <path d="m7.94 7.94-1.77-1.77"></path>
-                <circle cx="12" cy="12" r="3.75"></circle>
-              </svg>
-              <span>Light</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <section class="hero">
-        <article class="panel hero-main">
-          <div class="eyebrow">
-            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 3.75 4.75 7.5v4.75c0 4.25 2.9 7.74 7.25 8.5 4.35-.76 7.25-4.25 7.25-8.5V7.5L12 3.75Z"></path>
-              <path d="m9.5 12 1.75 1.75L14.75 10"></path>
-            </svg>
-            wrcs.su / infrastructure • delivery • reliability
-          </div>
-          <h1>DevOps profile built for systems that must actually work.</h1>
-          <p class="lead">
-            Я проектирую и собираю DevOps-контуры, где важны
-            <strong>повторяемость</strong>, <strong>наблюдаемость</strong> и
-            <strong>автоматизация</strong>. От Terraform и Kubernetes до
-            CI/CD, ingress, TLS и рабочих эксплуатационных сценариев.
-          </p>
-
-          <div class="cta-row">
-            <a class="btn primary" href="#projects">
-              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4.75 12h14.5"></path>
-                <path d="m13.25 6.75 5.25 5.25-5.25 5.25"></path>
-              </svg>
-              View Work
-            </a>
-            <a class="btn" href="#contact">
-              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="m4.75 7.25 7.25 5 7.25-5"></path>
-                <path d="M4.75 7.25h14.5v9.5H4.75z"></path>
-              </svg>
-              Contact
-            </a>
-          </div>
-
-          <div class="terminal">
-            <div class="terminal-line">
-              <svg class="icon icon-sm ok" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M5 12.75 9.25 17l9.75-9.75"></path>
-              </svg>
-              <span>infrastructure defined as code</span>
-            </div>
-            <div class="terminal-line">
-              <svg class="icon icon-sm ok" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M5 12.75 9.25 17l9.75-9.75"></path>
-              </svg>
-              <span>pipelines build and deploy automatically</span>
-            </div>
-            <div class="terminal-line">
-              <svg class="icon icon-sm ok" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M5 12.75 9.25 17l9.75-9.75"></path>
-              </svg>
-              <span>metrics, logs and access stay visible</span>
-            </div>
-            <div class="terminal-line">
-              <svg class="icon icon-sm warn" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 8v4"></path>
-                <path d="M12 16h.01"></path>
-                <path d="M10.29 4.86 2.86 17.7a1.25 1.25 0 0 0 1.08 1.88h14.12a1.25 1.25 0 0 0 1.08-1.88L13.71 4.86a1.25 1.25 0 0 0-2.42 0Z"></path>
-              </svg>
-              <span>production mindset beats decorative tooling</span>
-            </div>
-          </div>
-        </article>
-
-        <aside class="panel hero-side">
-          <div class="side-stack">
-            <section class="mini-card">
-              <small>
-                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M15.75 6.75a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"></path>
-                  <path d="M4.5 20.25a7.5 7.5 0 0 1 15 0"></path>
-                </svg>
-                Role
-              </small>
-              <strong>DevOps / SRE Track</strong>
-              <p>Инфраструктура, deployment flow, облако, контейнеры, observability и эксплуатационная устойчивость.</p>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>WRCS TEST | DevOps Engineer</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            :root {
+                --bg-1: #06111d;
+                --bg-2: #0c2034;
+                --bg-3: #173a51;
+                --panel: rgba(7, 18, 32, 0.72);
+                --panel-soft: rgba(255, 255, 255, 0.06);
+                --line: rgba(255, 255, 255, 0.1);
+                --text: #eef9ff;
+                --muted: #a9c0cf;
+                --accent: #7ef0bb;
+                --accent-2: #78c9ff;
+                --accent-3: #ffd472;
+                --shadow: 0 28px 90px rgba(0, 0, 0, 0.38);
+            }
+
+            body[data-theme="light"] {
+                --bg-1: #f7fbff;
+                --bg-2: #edf5fb;
+                --bg-3: #e4eef6;
+                --panel: rgba(255, 255, 255, 0.86);
+                --panel-soft: rgba(12, 32, 52, 0.04);
+                --line: rgba(18, 32, 51, 0.1);
+                --text: #132235;
+                --muted: #5d7185;
+                --accent: #0a8f73;
+                --accent-2: #0a73d9;
+                --accent-3: #c98916;
+                --shadow: 0 24px 64px rgba(18, 32, 51, 0.08);
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+
+            html {
+                scroll-behavior: smooth;
+            }
+
+            body {
+                margin: 0;
+                min-height: 100vh;
+                color: var(--text);
+                font-family: "Manrope", "Segoe UI", sans-serif;
+                background:
+                    radial-gradient(
+                        circle at 12% 12%,
+                        rgba(126, 240, 187, 0.18),
+                        transparent 22%
+                    ),
+                    radial-gradient(
+                        circle at 86% 18%,
+                        rgba(120, 201, 255, 0.16),
+                        transparent 24%
+                    ),
+                    radial-gradient(
+                        circle at 68% 82%,
+                        rgba(255, 212, 114, 0.12),
+                        transparent 22%
+                    ),
+                    linear-gradient(
+                        155deg,
+                        var(--bg-1) 0%,
+                        var(--bg-2) 46%,
+                        var(--bg-3) 100%
+                    );
+                overflow-x: hidden;
+            }
+
+            body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                opacity: 0.18;
+                background:
+                    linear-gradient(
+                        transparent 95%,
+                        rgba(255, 255, 255, 0.06) 96%
+                    ),
+                    linear-gradient(
+                        90deg,
+                        transparent 95%,
+                        rgba(255, 255, 255, 0.06) 96%
+                    );
+                background-size: 36px 36px;
+            }
+
+            body[data-theme="light"]::before {
+                opacity: 0.08;
+            }
+
+            .matrix-bg {
+                position: fixed;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                opacity: 0.22;
+                z-index: 0;
+            }
+
+            body[data-theme="light"] .matrix-bg {
+                opacity: 0.3;
+            }
+
+            a {
+                color: inherit;
+            }
+
+            .page {
+                position: relative;
+                z-index: 1;
+                width: min(1200px, calc(100% - 28px));
+                margin: 0 auto;
+                padding: 22px 0 36px;
+            }
+
+            .panel {
+                border: 1px solid var(--line);
+                border-radius: 26px;
+                background: var(--panel);
+                box-shadow: var(--shadow);
+                backdrop-filter: blur(14px);
+            }
+
+            .topbar {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 14px;
+                margin-bottom: 18px;
+                padding: 16px 20px;
+            }
+
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .brand-mark {
+                display: grid;
+                place-items: center;
+                width: 46px;
+                height: 46px;
+                border-radius: 16px;
+                background: linear-gradient(
+                    135deg,
+                    rgba(126, 240, 187, 0.24),
+                    rgba(120, 201, 255, 0.22)
+                );
+                border: 1px solid rgba(255, 255, 255, 0.14);
+            }
+
+            .icon {
+                width: 24px;
+                height: 24px;
+                stroke: currentColor;
+                stroke-width: 1.8;
+                fill: none;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            .icon-lg {
+                width: 30px;
+                height: 30px;
+            }
+
+            .icon-sm {
+                width: 20px;
+                height: 20px;
+            }
+
+            .brand-copy strong {
+                display: block;
+                font-size: 17px;
+                letter-spacing: 0.01em;
+            }
+
+            .brand-copy span {
+                color: var(--muted);
+                font-size: 12px;
+                font-weight: 700;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            .nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .nav a {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 14px;
+                border-radius: 999px;
+                border: 1px solid var(--line);
+                background: var(--panel-soft);
+                text-decoration: none;
+                font-size: 14px;
+                font-weight: 700;
+            }
+
+            .toolbar {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .theme-toggle {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px;
+                border: 1px solid var(--line);
+                border-radius: 999px;
+                background: var(--panel-soft);
+            }
+
+            .theme-segment {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                padding: 10px 14px;
+                border: 0;
+                border-radius: 999px;
+                background: transparent;
+                color: var(--muted);
+                font: inherit;
+                font-size: 14px;
+                font-weight: 700;
+                cursor: pointer;
+                transition:
+                    background 0.2s ease,
+                    color 0.2s ease,
+                    transform 0.2s ease;
+            }
+
+            .theme-segment.active {
+                background: rgba(255, 255, 255, 0.12);
+                color: var(--text);
+                box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+            }
+
+            body[data-theme="light"] .theme-segment.active {
+                background: rgba(12, 32, 52, 0.08);
+                box-shadow: inset 0 0 0 1px rgba(18, 32, 51, 0.05);
+            }
+
+            .hero {
+                display: grid;
+                grid-template-columns: 1.45fr 0.95fr;
+                gap: 18px;
+                margin-bottom: 18px;
+            }
+
+            .hero-main,
+            .hero-side {
+                padding: 28px;
+            }
+
+            .eyebrow {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 14px;
+                border-radius: 999px;
+                border: 1px solid rgba(126, 240, 187, 0.28);
+                background: rgba(126, 240, 187, 0.12);
+                color: var(--accent);
+                font-size: 12px;
+                font-weight: 800;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            h1 {
+                margin: 18px 0 14px;
+                max-width: 700px;
+                font-size: clamp(34px, 5.6vw, 58px);
+                line-height: 1.04;
+                letter-spacing: -0.04em;
+            }
+
+            .lead {
+                max-width: 680px;
+                margin: 0;
+                color: var(--muted);
+                font-size: 17px;
+                line-height: 1.75;
+            }
+
+            .lead strong {
+                color: var(--text);
+            }
+
+            .cta-row {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                margin-top: 24px;
+            }
+
+            .btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                padding: 13px 18px;
+                border-radius: 18px;
+                border: 1px solid var(--line);
+                background: rgba(255, 255, 255, 0.08);
+                text-decoration: none;
+                font-size: 15px;
+                font-weight: 800;
+                letter-spacing: -0.01em;
+            }
+
+            .btn.primary {
+                color: #062018;
+                background: linear-gradient(135deg, var(--accent), #a3ffd8);
+                border-color: transparent;
+            }
+
+            body[data-theme="light"] .btn.primary {
+                color: #ffffff;
+                background: linear-gradient(135deg, #0a8f73, #0a73d9);
+            }
+
+            .terminal {
+                margin-top: 24px;
+                padding: 18px 20px;
+                border-radius: 20px;
+                border: 1px solid rgba(120, 201, 255, 0.18);
+                background: rgba(3, 10, 19, 0.78);
+                font-family: "IBM Plex Mono", "Courier New", monospace;
+                font-size: 14px;
+                line-height: 1.8;
+            }
+
+            body[data-theme="light"] .terminal {
+                border-color: rgba(10, 115, 217, 0.14);
+                background: rgba(246, 250, 255, 0.92);
+            }
+
+            .terminal-line {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .ok {
+                color: var(--accent);
+            }
+
+            .warn {
+                color: var(--accent-3);
+            }
+
+            .side-stack {
+                display: grid;
+                gap: 16px;
+            }
+
+            .mini-card {
+                padding: 18px 18px 20px;
+                border-radius: 22px;
+                border: 1px solid var(--line);
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            .mini-card small {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 10px;
+                color: var(--accent-2);
+                font-size: 12px;
+                font-weight: 800;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            .mini-card strong {
+                display: block;
+                margin-bottom: 8px;
+                font-size: 22px;
+                line-height: 1.2;
+            }
+
+            .mini-card p {
+                margin: 0;
+                color: var(--muted);
+                font-size: 15px;
+                line-height: 1.68;
+            }
+
+            .section-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 18px;
+                margin-bottom: 18px;
+            }
+
+            .card {
+                padding: 24px;
+            }
+
+            .card-tag {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 12px;
+                color: var(--accent);
+                font-size: 12px;
+                font-weight: 800;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+            }
+
+            .card h2,
+            .card h3 {
+                margin: 0 0 12px;
+                font-size: 24px;
+                line-height: 1.2;
+            }
+
+            .card p {
+                margin: 0;
+                color: var(--muted);
+                font-size: 16px;
+                line-height: 1.72;
+            }
+
+            .skills {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                margin-top: 18px;
+            }
+
+            .skills span {
+                padding: 10px 13px;
+                border-radius: 999px;
+                border: 1px solid var(--line);
+                background: rgba(255, 255, 255, 0.05);
+                font-size: 13px;
+                font-weight: 700;
+            }
+
+            body[data-theme="light"] .mini-card,
+            body[data-theme="light"] .timeline-item,
+            body[data-theme="light"] .contact-list a,
+            body[data-theme="light"] .contact-list div,
+            body[data-theme="light"] .skills span {
+                background: rgba(12, 32, 52, 0.035);
+            }
+
+            .timeline {
+                display: grid;
+                gap: 14px;
+                margin-top: 12px;
+            }
+
+            .timeline-item {
+                padding: 16px 18px;
+                border-radius: 18px;
+                border: 1px solid var(--line);
+                background: rgba(255, 255, 255, 0.05);
+            }
+
+            .timeline-item strong {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                margin-bottom: 6px;
+            }
+
+            .timeline-item p {
+                margin: 0;
+            }
+
+            .wide {
+                display: grid;
+                grid-template-columns: 1.2fr 0.8fr;
+                gap: 18px;
+                margin-bottom: 18px;
+            }
+
+            .quote {
+                font-size: 24px;
+                line-height: 1.4;
+                letter-spacing: -0.03em;
+            }
+
+            .quote strong {
+                color: var(--accent);
+            }
+
+            .contact-list {
+                display: grid;
+                gap: 12px;
+                margin-top: 16px;
+            }
+
+            .contact-list a,
+            .contact-list div {
+                display: block;
+                padding: 14px 16px;
+                border-radius: 18px;
+                border: 1px solid var(--line);
+                background: rgba(255, 255, 255, 0.05);
+                text-decoration: none;
+                font-size: 15px;
+            }
+
+            .footer {
+                display: flex;
+                justify-content: space-between;
+                gap: 14px;
+                padding: 18px 22px;
+            }
+
+            .footer span {
+                color: var(--muted);
+                font-size: 14px;
+            }
+
+            @media (max-width: 1024px) {
+                .hero,
+                .wide,
+                .section-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            @media (max-width: 720px) {
+                .page {
+                    width: min(100% - 18px, 1200px);
+                    padding: 10px 0 22px;
+                }
+
+                .topbar,
+                .hero-main,
+                .hero-side,
+                .card,
+                .footer {
+                    padding-left: 16px;
+                    padding-right: 16px;
+                }
+
+                .topbar,
+                .footer {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
+                .hero-main,
+                .hero-side,
+                .card {
+                    padding-top: 20px;
+                    padding-bottom: 20px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <canvas class="matrix-bg" id="matrix-bg" aria-hidden="true"></canvas>
+        <div class="page">
+            <header class="panel topbar">
+                <div class="brand">
+                    <div class="brand-mark">
+                        <svg
+                            class="icon icon-lg"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M3 15c3-8 15-8 18 0"></path>
+                            <path d="M4.5 15.5h15"></path>
+                            <path d="M8.5 11.5 12 8l3.5 3.5"></path>
+                        </svg>
+                    </div>
+                    <div class="brand-copy">
+                        <strong>WRCS</strong>
+                        <span>DevOps Engineer / Platform Builder</span>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="#about">
+                        <svg
+                            class="icon icon-sm"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M15.75 6.75a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+                            ></path>
+                            <path d="M4.5 20.25a7.5 7.5 0 0 1 15 0"></path>
+                        </svg>
+                        About
+                    </a>
+                    <a href="#stack">
+                        <svg
+                            class="icon icon-sm"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M4.75 7.75 12 4l7.25 3.75L12 11.5 4.75 7.75Z"
+                            ></path>
+                            <path d="M4.75 12 12 15.75 19.25 12"></path>
+                            <path d="M4.75 16.25 12 20l7.25-3.75"></path>
+                        </svg>
+                        Stack
+                    </a>
+                    <a href="#projects">
+                        <svg
+                            class="icon icon-sm"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M4.75 6.75h14.5v10.5H4.75z"></path>
+                            <path d="M8 17.25h8"></path>
+                        </svg>
+                        Projects
+                    </a>
+                    <a href="#contact">
+                        <svg
+                            class="icon icon-sm"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="m4.75 7.25 7.25 5 7.25-5"></path>
+                            <path d="M4.75 7.25h14.5v9.5H4.75z"></path>
+                        </svg>
+                        Contact
+                    </a>
+                </nav>
+                <div class="toolbar">
+                    <div
+                        class="theme-toggle"
+                        role="tablist"
+                        aria-label="Theme switcher"
+                    >
+                        <button
+                            class="theme-segment"
+                            type="button"
+                            id="theme-dark"
+                            aria-label="Dark theme"
+                        >
+                            <svg
+                                class="icon icon-sm"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M15.25 4.75a7.25 7.25 0 1 0 4 13.3 7 7 0 0 1-4.73 1.7 7.25 7.25 0 0 1 0-14.5 7 7 0 0 1 .73.04Z"
+                                ></path>
+                            </svg>
+                            <span>Dark</span>
+                        </button>
+                        <button
+                            class="theme-segment"
+                            type="button"
+                            id="theme-light"
+                            aria-label="Light theme"
+                        >
+                            <svg
+                                class="icon icon-sm"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path d="M12 3.75v2.5"></path>
+                                <path d="M12 17.75v2.5"></path>
+                                <path d="M20.25 12h-2.5"></path>
+                                <path d="M6.25 12h-2.5"></path>
+                                <path d="M17.83 6.17 16.06 7.94"></path>
+                                <path d="m7.94 16.06-1.77 1.77"></path>
+                                <path d="m17.83 17.83-1.77-1.77"></path>
+                                <path d="m7.94 7.94-1.77-1.77"></path>
+                                <circle cx="12" cy="12" r="3.75"></circle>
+                            </svg>
+                            <span>Light</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <section class="hero">
+                <article class="panel hero-main">
+                    <div class="eyebrow">
+                        <svg
+                            class="icon icon-sm"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M12 3.75 4.75 7.5v4.75c0 4.25 2.9 7.74 7.25 8.5 4.35-.76 7.25-4.25 7.25-8.5V7.5L12 3.75Z"
+                            ></path>
+                            <path d="m9.5 12 1.75 1.75L14.75 10"></path>
+                        </svg>
+                        wrcs.su / infrastructure • delivery • reliability
+                    </div>
+                    <h1>
+                        DevOps profile built for systems that must actually
+                        work.
+                    </h1>
+                    <p class="lead">
+                        Я проектирую и собираю DevOps-контуры, где важны
+                        <strong>повторяемость</strong>,
+                        <strong>наблюдаемость</strong> и
+                        <strong>автоматизация</strong>. От Terraform и
+                        Kubernetes до CI/CD, ingress, TLS и рабочих
+                        эксплуатационных сценариев.
+                    </p>
+
+                    <div class="cta-row">
+                        <a class="btn primary" href="#projects">
+                            <svg
+                                class="icon icon-sm"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path d="M4.75 12h14.5"></path>
+                                <path
+                                    d="m13.25 6.75 5.25 5.25-5.25 5.25"
+                                ></path>
+                            </svg>
+                            View Work
+                        </a>
+                        <a class="btn" href="#contact">
+                            <svg
+                                class="icon icon-sm"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path d="m4.75 7.25 7.25 5 7.25-5"></path>
+                                <path d="M4.75 7.25h14.5v9.5H4.75z"></path>
+                            </svg>
+                            Contact
+                        </a>
+                    </div>
+
+                    <div class="terminal">
+                        <div class="terminal-line">
+                            <svg
+                                class="icon icon-sm ok"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path d="M5 12.75 9.25 17l9.75-9.75"></path>
+                            </svg>
+                            <span>infrastructure defined as code</span>
+                        </div>
+                        <div class="terminal-line">
+                            <svg
+                                class="icon icon-sm ok"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path d="M5 12.75 9.25 17l9.75-9.75"></path>
+                            </svg>
+                            <span
+                                >pipelines build and deploy automatically</span
+                            >
+                        </div>
+                        <div class="terminal-line">
+                            <svg
+                                class="icon icon-sm ok"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path d="M5 12.75 9.25 17l9.75-9.75"></path>
+                            </svg>
+                            <span>metrics, logs and access stay visible</span>
+                        </div>
+                        <div class="terminal-line">
+                            <svg
+                                class="icon icon-sm warn"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path d="M12 8v4"></path>
+                                <path d="M12 16h.01"></path>
+                                <path
+                                    d="M10.29 4.86 2.86 17.7a1.25 1.25 0 0 0 1.08 1.88h14.12a1.25 1.25 0 0 0 1.08-1.88L13.71 4.86a1.25 1.25 0 0 0-2.42 0Z"
+                                ></path>
+                            </svg>
+                            <span
+                                >production mindset beats decorative
+                                tooling</span
+                            >
+                        </div>
+                    </div>
+                </article>
+
+                <aside class="panel hero-side">
+                    <div class="side-stack">
+                        <section class="mini-card">
+                            <small>
+                                <svg
+                                    class="icon icon-sm"
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M15.75 6.75a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+                                    ></path>
+                                    <path
+                                        d="M4.5 20.25a7.5 7.5 0 0 1 15 0"
+                                    ></path>
+                                </svg>
+                                Role
+                            </small>
+                            <strong>DevOps / SRE Track</strong>
+                            <p>
+                                Инфраструктура, deployment flow, облако,
+                                контейнеры, observability и эксплуатационная
+                                устойчивость.
+                            </p>
+                        </section>
+
+                        <section class="mini-card">
+                            <small>
+                                <svg
+                                    class="icon icon-sm"
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M12 6.5v11"></path>
+                                    <path d="M6.5 12h11"></path>
+                                    <circle cx="12" cy="12" r="7.25"></circle>
+                                </svg>
+                                Focus
+                            </small>
+                            <strong>Cloud Native</strong>
+                            <p>
+                                Terraform, Kubernetes, ingress, certificate
+                                automation, release pipelines и контроль
+                                изменений.
+                            </p>
+                        </section>
+
+                        <section class="mini-card">
+                            <small>
+                                <svg
+                                    class="icon icon-sm"
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        d="M6.75 12.25 10 15.5l7.25-7.25"
+                                    ></path>
+                                    <path
+                                        d="M4.75 12a7.25 7.25 0 1 0 14.5 0 7.25 7.25 0 0 0-14.5 0Z"
+                                    ></path>
+                                </svg>
+                                Style
+                            </small>
+                            <strong>Pragmatic Delivery</strong>
+                            <p>
+                                Не “магия ради демо”, а рабочая система:
+                                поднять, обновить, проверить, удалить,
+                                развернуть снова.
+                            </p>
+                        </section>
+                    </div>
+                </aside>
             </section>
 
-            <section class="mini-card">
-              <small>
-                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M12 6.5v11"></path>
-                  <path d="M6.5 12h11"></path>
-                  <circle cx="12" cy="12" r="7.25"></circle>
-                </svg>
-                Focus
-              </small>
-              <strong>Cloud Native</strong>
-              <p>Terraform, Kubernetes, ingress, certificate automation, release pipelines и контроль изменений.</p>
+            <section id="about" class="section-grid">
+                <article class="panel card">
+                    <span class="card-tag">
+                        <svg
+                            class="icon icon-sm"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M12 8.25h.01"></path>
+                            <path d="M11.25 11.25h1.5v4.5h1"></path>
+                            <circle cx="12" cy="12" r="8"></circle>
+                        </svg>
+                        01 / About
+                    </span>
+                    <h2>Engineering with operational clarity</h2>
+                    <p>
+                        В DevOps меня интересует не только сборка пайплайна, а
+                        весь путь сервиса: от сети и service accounts до
+                        rollout, доменных имен, TLS-сертификатов и понятной
+                        поддержки после релиза.
+                    </p>
+                </article>
+
+                <article class="panel card">
+                    <span class="card-tag">
+                        <svg
+                            class="icon icon-sm"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M12 4.75v2.5"></path>
+                            <path d="M12 16.75v2.5"></path>
+                            <path d="M19.25 12h-2.5"></path>
+                            <path d="M7.25 12h-2.5"></path>
+                            <path d="M17.13 6.87 15.36 8.64"></path>
+                            <path d="m8.64 15.36-1.77 1.77"></path>
+                            <path d="m17.13 17.13-1.77-1.77"></path>
+                            <path d="m8.64 8.64-1.77-1.77"></path>
+                            <circle cx="12" cy="12" r="3.5"></circle>
+                        </svg>
+                        02 / Mindset
+                    </span>
+                    <h2>Automation first</h2>
+                    <p>
+                        Хорошая инфраструктура должна разворачиваться с нуля по
+                        предсказуемому сценарию. Если процесс нельзя
+                        воспроизвести, он не закончен.
+                    </p>
+                </article>
+
+                <article class="panel card">
+                    <span class="card-tag">
+                        <svg
+                            class="icon icon-sm"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M3.75 14.25 8.5 9.5l3.25 3.25 5.5-5.5"
+                            ></path>
+                            <path d="M14.75 7.25h2.5v2.5"></path>
+                        </svg>
+                        03 / Signal
+                    </span>
+                    <h2>Observe everything</h2>
+                    <p>
+                        Метрики и доступность не должны появляться потом.
+                        Monitoring, ingress, внешние адреса и сертификаты
+                        закладываются в систему сразу.
+                    </p>
+                </article>
             </section>
 
-            <section class="mini-card">
-              <small>
-                <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M6.75 12.25 10 15.5l7.25-7.25"></path>
-                  <path d="M4.75 12a7.25 7.25 0 1 0 14.5 0 7.25 7.25 0 0 0-14.5 0Z"></path>
-                </svg>
-                Style
-              </small>
-              <strong>Pragmatic Delivery</strong>
-              <p>Не “магия ради демо”, а рабочая система: поднять, обновить, проверить, удалить, развернуть снова.</p>
+            <section id="stack" class="wide">
+                <article class="panel card">
+                    <span class="card-tag">
+                        <svg
+                            class="icon icon-sm"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M4.75 7.75 12 4l7.25 3.75L12 11.5 4.75 7.75Z"
+                            ></path>
+                            <path d="M4.75 12 12 15.75 19.25 12"></path>
+                            <path d="M4.75 16.25 12 20l7.25-3.75"></path>
+                        </svg>
+                        Core Stack
+                    </span>
+                    <h2>Tools I use to ship infrastructure</h2>
+                    <p>
+                        Основной контур строю вокруг IaC, контейнеризации и
+                        автоматического деплоя в облаке. Ниже тот стек, который
+                        логично сочетается для реальной платформенной работы.
+                    </p>
+                    <div class="skills">
+                        <span>Terraform</span>
+                        <span>Yandex Cloud</span>
+                        <span>Kubernetes</span>
+                        <span>Helm</span>
+                        <span>Docker</span>
+                        <span>GitHub Actions</span>
+                        <span>NGINX Ingress</span>
+                        <span>Prometheus</span>
+                        <span>Grafana</span>
+                        <span>cert-manager</span>
+                        <span>Linux</span>
+                        <span>Bash</span>
+                    </div>
+                </article>
+
+                <aside class="panel card">
+                    <span class="card-tag">
+                        <svg
+                            class="icon icon-sm"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M4.75 12h14.5"></path>
+                            <path d="m13.5 7.5 5.25 4.5-5.25 4.5"></path>
+                        </svg>
+                        Signal
+                    </span>
+                    <p class="quote">
+                        “A deployment is not finished until it is
+                        <strong>reachable</strong>,
+                        <strong>observable</strong>
+                        and
+                        <strong>repeatable</strong>.”
+                    </p>
+                </aside>
             </section>
-          </div>
-        </aside>
-      </section>
 
-      <section id="about" class="section-grid">
-        <article class="panel card">
-          <span class="card-tag">
-            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 8.25h.01"></path>
-              <path d="M11.25 11.25h1.5v4.5h1"></path>
-              <circle cx="12" cy="12" r="8"></circle>
-            </svg>
-            01 / About
-          </span>
-          <h2>Engineering with operational clarity</h2>
-          <p>
-            В DevOps меня интересует не только сборка пайплайна, а весь путь сервиса:
-            от сети и service accounts до rollout, доменных имен, TLS-сертификатов и
-            понятной поддержки после релиза.
-          </p>
-        </article>
+            <section id="projects" class="section-grid">
+                <article class="panel card">
+                    <span class="card-tag">
+                        <svg
+                            class="icon icon-sm"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M4.75 6.75h14.5v10.5H4.75z"></path>
+                            <path d="M8 17.25h8"></path>
+                        </svg>
+                        Project / 01
+                    </span>
+                    <h3>Managed Kubernetes Platform</h3>
+                    <p>
+                        Облачная платформа на Yandex Cloud: VPC, подсети,
+                        security groups, managed cluster, node group, registry,
+                        ingress и внешняя публикация сервисов.
+                    </p>
+                </article>
 
-        <article class="panel card">
-          <span class="card-tag">
-            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 4.75v2.5"></path>
-              <path d="M12 16.75v2.5"></path>
-              <path d="M19.25 12h-2.5"></path>
-              <path d="M7.25 12h-2.5"></path>
-              <path d="M17.13 6.87 15.36 8.64"></path>
-              <path d="m8.64 15.36-1.77 1.77"></path>
-              <path d="m17.13 17.13-1.77-1.77"></path>
-              <path d="m8.64 8.64-1.77-1.77"></path>
-              <circle cx="12" cy="12" r="3.5"></circle>
-            </svg>
-            02 / Mindset
-          </span>
-          <h2>Automation first</h2>
-          <p>
-            Хорошая инфраструктура должна разворачиваться с нуля по предсказуемому сценарию.
-            Если процесс нельзя воспроизвести, он не закончен.
-          </p>
-        </article>
+                <article class="panel card">
+                    <span class="card-tag">
+                        <svg
+                            class="icon icon-sm"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="M5.5 15.5h3V8.5h-3Z"></path>
+                            <path d="M10.5 15.5h3V5.5h-3Z"></path>
+                            <path d="M15.5 15.5h3v-5h-3Z"></path>
+                        </svg>
+                        Project / 02
+                    </span>
+                    <h3>Monitoring & Delivery</h3>
+                    <p>
+                        Prometheus, Grafana, Alertmanager, exporters, плюс CI/CD
+                        цепочка: build -> push -> deploy с релизами по тегам.
+                    </p>
+                </article>
 
-        <article class="panel card">
-          <span class="card-tag">
-            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M3.75 14.25 8.5 9.5l3.25 3.25 5.5-5.5"></path>
-              <path d="M14.75 7.25h2.5v2.5"></path>
-            </svg>
-            03 / Signal
-          </span>
-          <h2>Observe everything</h2>
-          <p>
-            Метрики и доступность не должны появляться потом. Monitoring, ingress, внешние
-            адреса и сертификаты закладываются в систему сразу.
-          </p>
-        </article>
-      </section>
+                <article class="panel card">
+                    <span class="card-tag">
+                        <svg
+                            class="icon icon-sm"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M8.25 12a3.75 3.75 0 0 1 3.75-3.75h2"
+                            ></path>
+                            <path
+                                d="M15.75 12A3.75 3.75 0 0 1 12 15.75h-2"
+                            ></path>
+                            <path d="m9.75 14.25 4.5-4.5"></path>
+                        </svg>
+                        Project / 03
+                    </span>
+                    <h3>DNS + HTTPS Runtime</h3>
+                    <p>
+                        Подключение доменов, выдача сертификатов через Let's
+                        Encrypt, безопасный внешний доступ к приложению и
+                        observability-интерфейсам.
+                    </p>
+                </article>
+            </section>
 
-      <section id="stack" class="wide">
-        <article class="panel card">
-          <span class="card-tag">
-            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4.75 7.75 12 4l7.25 3.75L12 11.5 4.75 7.75Z"></path>
-              <path d="M4.75 12 12 15.75 19.25 12"></path>
-              <path d="M4.75 16.25 12 20l7.25-3.75"></path>
-            </svg>
-            Core Stack
-          </span>
-          <h2>Tools I use to ship infrastructure</h2>
-          <p>
-            Основной контур строю вокруг IaC, контейнеризации и автоматического деплоя в облаке.
-            Ниже тот стек, который логично сочетается для реальной платформенной работы.
-          </p>
-          <div class="skills">
-            <span>Terraform</span>
-            <span>Yandex Cloud</span>
-            <span>Kubernetes</span>
-            <span>Helm</span>
-            <span>Docker</span>
-            <span>GitHub Actions</span>
-            <span>NGINX Ingress</span>
-            <span>Prometheus</span>
-            <span>Grafana</span>
-            <span>cert-manager</span>
-            <span>Linux</span>
-            <span>Bash</span>
-          </div>
-        </article>
+            <section class="panel card">
+                <span class="card-tag">
+                    <svg
+                        class="icon icon-sm"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path d="M4.75 7.75h8.5"></path>
+                        <path d="M4.75 12h14.5"></path>
+                        <path d="M4.75 16.25h10.5"></path>
+                        <path d="m15.5 5.75 3.75 6.25-3.75 6.25"></path>
+                    </svg>
+                    Execution Flow
+                </span>
+                <h2>How I usually build delivery systems</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <strong>
+                            <svg
+                                class="icon icon-sm"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path d="M6.5 5.75h11v12.5h-11z"></path>
+                                <path d="M9 9.25h6"></path>
+                                <path d="M9 12h6"></path>
+                                <path d="M9 14.75h4"></path>
+                            </svg>
+                            1. Describe the platform
+                        </strong>
+                        <p>
+                            Сначала Terraform, роли, backend state, network
+                            layout и границы доступа.
+                        </p>
+                    </div>
+                    <div class="timeline-item">
+                        <strong>
+                            <svg
+                                class="icon icon-sm"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M4.75 7.75 12 4l7.25 3.75L12 11.5 4.75 7.75Z"
+                                ></path>
+                                <path d="M4.75 12 12 15.75 19.25 12"></path>
+                            </svg>
+                            2. Launch the cluster
+                        </strong>
+                        <p>
+                            Kubernetes, ingress, namespaces, workload placement,
+                            публикация сервисов.
+                        </p>
+                    </div>
+                    <div class="timeline-item">
+                        <strong>
+                            <svg
+                                class="icon icon-sm"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M4.75 15.25 8.25 11l3.25 2.75 5-6"
+                                ></path>
+                                <path d="M14.75 7.75h2.5v2.5"></path>
+                            </svg>
+                            3. Add observability
+                        </strong>
+                        <p>
+                            Prometheus, Grafana, dashboards и проверка сигналов
+                            после деплоя.
+                        </p>
+                    </div>
+                    <div class="timeline-item">
+                        <strong>
+                            <svg
+                                class="icon icon-sm"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path d="M4.75 12h14.5"></path>
+                                <path
+                                    d="m13.25 6.75 5.25 5.25-5.25 5.25"
+                                ></path>
+                            </svg>
+                            4. Automate the release
+                        </strong>
+                        <p>
+                            GitHub Actions, image build, registry push, rollout
+                            и release by tag.
+                        </p>
+                    </div>
+                    <div class="timeline-item">
+                        <strong>
+                            <svg
+                                class="icon icon-sm"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M12 3.75 4.75 7.5v4.75c0 4.25 2.9 7.74 7.25 8.5 4.35-.76 7.25-4.25 7.25-8.5V7.5L12 3.75Z"
+                                ></path>
+                                <path d="m9.5 12 1.75 1.75L14.75 10"></path>
+                            </svg>
+                            5. Secure the edge
+                        </strong>
+                        <p>
+                            DNS, ingress rules, TLS-сертификаты, внешний доступ
+                            и финальная проверка.
+                        </p>
+                    </div>
+                </div>
+            </section>
 
-        <aside class="panel card">
-          <span class="card-tag">
-            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4.75 12h14.5"></path>
-              <path d="m13.5 7.5 5.25 4.5-5.25 4.5"></path>
-            </svg>
-            Signal
-          </span>
-          <p class="quote">
-            “A deployment is not finished until it is
-            <strong>reachable</strong>,
-            <strong>observable</strong>
-            and
-            <strong>repeatable</strong>.”
-          </p>
-        </aside>
-      </section>
+            <section id="contact" class="wide">
+                <article class="panel card">
+                    <span class="card-tag">
+                        <svg
+                            class="icon icon-sm"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path d="m4.75 7.25 7.25 5 7.25-5"></path>
+                            <path d="M4.75 7.25h14.5v9.5H4.75z"></path>
+                        </svg>
+                        Contact
+                    </span>
+                    <h2>Open to platform and DevOps work</h2>
+                    <p>
+                        Этот лендинг можно использовать как профильную страницу
+                        для домена `wrcs.su`. Здесь можно разместить реальные
+                        ссылки на GitHub, Telegram, email и рабочие кейсы.
+                    </p>
+                </article>
 
-      <section id="projects" class="section-grid">
-        <article class="panel card">
-          <span class="card-tag">
-            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M4.75 6.75h14.5v10.5H4.75z"></path>
-              <path d="M8 17.25h8"></path>
-            </svg>
-            Project / 01
-          </span>
-          <h3>Managed Kubernetes Platform</h3>
-          <p>
-            Облачная платформа на Yandex Cloud: VPC, подсети, security groups,
-            managed cluster, node group, registry, ingress и внешняя публикация сервисов.
-          </p>
-        </article>
+                <aside class="panel card">
+                    <span class="card-tag">
+                        <svg
+                            class="icon icon-sm"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <path
+                                d="M8.25 12a3.75 3.75 0 0 1 3.75-3.75h2"
+                            ></path>
+                            <path
+                                d="M15.75 12A3.75 3.75 0 0 1 12 15.75h-2"
+                            ></path>
+                            <path d="m9.75 14.25 4.5-4.5"></path>
+                        </svg>
+                        Links
+                    </span>
+                    <div class="contact-list">
+                        <a href="https://github.com/SERMSN">
+                            GitHub / SERMSN
+                        </a>
+                        <div>Email / your-email@example.com</div>
+                        <div>Telegram / @your_handle</div>
+                        <div>Location / Russia</div>
+                    </div>
+                </aside>
+            </section>
 
-        <article class="panel card">
-          <span class="card-tag">
-            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5.5 15.5h3V8.5h-3Z"></path>
-              <path d="M10.5 15.5h3V5.5h-3Z"></path>
-              <path d="M15.5 15.5h3v-5h-3Z"></path>
-            </svg>
-            Project / 02
-          </span>
-          <h3>Monitoring & Delivery</h3>
-          <p>
-            Prometheus, Grafana, Alertmanager, exporters, плюс CI/CD цепочка:
-            build -> push -> deploy с релизами по тегам.
-          </p>
-        </article>
-
-        <article class="panel card">
-          <span class="card-tag">
-            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M8.25 12a3.75 3.75 0 0 1 3.75-3.75h2"></path>
-              <path d="M15.75 12A3.75 3.75 0 0 1 12 15.75h-2"></path>
-              <path d="m9.75 14.25 4.5-4.5"></path>
-            </svg>
-            Project / 03
-          </span>
-          <h3>DNS + HTTPS Runtime</h3>
-          <p>
-            Подключение доменов, выдача сертификатов через Let's Encrypt,
-            безопасный внешний доступ к приложению и observability-интерфейсам.
-          </p>
-        </article>
-      </section>
-
-      <section class="panel card">
-        <span class="card-tag">
-          <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4.75 7.75h8.5"></path>
-            <path d="M4.75 12h14.5"></path>
-            <path d="M4.75 16.25h10.5"></path>
-            <path d="m15.5 5.75 3.75 6.25-3.75 6.25"></path>
-          </svg>
-          Execution Flow
-        </span>
-        <h2>How I usually build delivery systems</h2>
-        <div class="timeline">
-          <div class="timeline-item">
-            <strong>
-              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M6.5 5.75h11v12.5h-11z"></path>
-                <path d="M9 9.25h6"></path>
-                <path d="M9 12h6"></path>
-                <path d="M9 14.75h4"></path>
-              </svg>
-              1. Describe the platform
-            </strong>
-            <p>Сначала Terraform, роли, backend state, network layout и границы доступа.</p>
-          </div>
-          <div class="timeline-item">
-            <strong>
-              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4.75 7.75 12 4l7.25 3.75L12 11.5 4.75 7.75Z"></path>
-                <path d="M4.75 12 12 15.75 19.25 12"></path>
-              </svg>
-              2. Launch the cluster
-            </strong>
-            <p>Kubernetes, ingress, namespaces, workload placement, публикация сервисов.</p>
-          </div>
-          <div class="timeline-item">
-            <strong>
-              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4.75 15.25 8.25 11l3.25 2.75 5-6"></path>
-                <path d="M14.75 7.75h2.5v2.5"></path>
-              </svg>
-              3. Add observability
-            </strong>
-            <p>Prometheus, Grafana, dashboards и проверка сигналов после деплоя.</p>
-          </div>
-          <div class="timeline-item">
-            <strong>
-              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4.75 12h14.5"></path>
-                <path d="m13.25 6.75 5.25 5.25-5.25 5.25"></path>
-              </svg>
-              4. Automate the release
-            </strong>
-            <p>GitHub Actions, image build, registry push, rollout и release by tag.</p>
-          </div>
-          <div class="timeline-item">
-            <strong>
-              <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 3.75 4.75 7.5v4.75c0 4.25 2.9 7.74 7.25 8.5 4.35-.76 7.25-4.25 7.25-8.5V7.5L12 3.75Z"></path>
-                <path d="m9.5 12 1.75 1.75L14.75 10"></path>
-              </svg>
-              5. Secure the edge
-            </strong>
-            <p>DNS, ingress rules, TLS-сертификаты, внешний доступ и финальная проверка.</p>
-          </div>
+            <footer class="panel footer">
+                <span>WRCS • DevOps Engineer • Landing for wrcs.su</span>
+                <span>Infrastructure • Delivery • Observability</span>
+            </footer>
         </div>
-      </section>
+        <script>
+            const body = document.body;
+            const darkButton = document.getElementById("theme-dark");
+            const lightButton = document.getElementById("theme-light");
+            const storageKey = "wrcs-theme";
+            const matrixCanvas = document.getElementById("matrix-bg");
+            const matrixCtx = matrixCanvas.getContext("2d");
+            const matrixChars = "01$";
+            let matrixColumns = [];
+            let matrixFontSize = 20;
+            let matrixLastFrame = 0;
+            const matrixFrameDelay = 95;
 
-      <section id="contact" class="wide">
-        <article class="panel card">
-          <span class="card-tag">
-            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="m4.75 7.25 7.25 5 7.25-5"></path>
-              <path d="M4.75 7.25h14.5v9.5H4.75z"></path>
-            </svg>
-            Contact
-          </span>
-          <h2>Open to platform and DevOps work</h2>
-          <p>
-            Этот лендинг можно использовать как профильную страницу для домена `wrcs.su`.
-            Здесь можно разместить реальные ссылки на GitHub, Telegram, email и рабочие кейсы.
-          </p>
-        </article>
+            function applyTheme(theme) {
+                body.setAttribute("data-theme", theme);
+                darkButton.classList.toggle("active", theme === "dark");
+                lightButton.classList.toggle("active", theme === "light");
+            }
 
-        <aside class="panel card">
-          <span class="card-tag">
-            <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M8.25 12a3.75 3.75 0 0 1 3.75-3.75h2"></path>
-              <path d="M15.75 12A3.75 3.75 0 0 1 12 15.75h-2"></path>
-              <path d="m9.75 14.25 4.5-4.5"></path>
-            </svg>
-            Links
-          </span>
-          <div class="contact-list">
-            <a href="https://github.com/SERMSN">
-              GitHub / SERMSN
-            </a>
-            <div>Email / your-email@example.com</div>
-            <div>Telegram / @your_handle</div>
-            <div>Location / Russia</div>
-          </div>
-        </aside>
-      </section>
+            function resizeMatrix() {
+                const scale = window.devicePixelRatio || 1;
+                matrixCanvas.width = Math.floor(window.innerWidth * scale);
+                matrixCanvas.height = Math.floor(window.innerHeight * scale);
+                matrixCanvas.style.width = `${window.innerWidth}px`;
+                matrixCanvas.style.height = `${window.innerHeight}px`;
+                matrixCtx.setTransform(scale, 0, 0, scale, 0, 0);
 
-      <footer class="panel footer">
-        <span>WRCS • DevOps Engineer • Landing for wrcs.su</span>
-        <span>Infrastructure • Delivery • Observability</span>
-      </footer>
-    </div>
-    <script>
-      const body = document.body;
-      const darkButton = document.getElementById("theme-dark");
-      const lightButton = document.getElementById("theme-light");
-      const storageKey = "wrcs-theme";
-      const matrixCanvas = document.getElementById("matrix-bg");
-      const matrixCtx = matrixCanvas.getContext("2d");
-      const matrixChars = "01$";
-      let matrixColumns = [];
-      let matrixFontSize = 20;
-      let matrixLastFrame = 0;
-      const matrixFrameDelay = 95;
+                const columnCount = Math.ceil(
+                    window.innerWidth / matrixFontSize,
+                );
+                matrixColumns = Array.from({ length: columnCount }, () =>
+                    Math.floor(
+                        Math.random() * (window.innerHeight / matrixFontSize),
+                    ),
+                );
+            }
 
-      function applyTheme(theme) {
-        body.setAttribute("data-theme", theme);
-        darkButton.classList.toggle("active", theme === "dark");
-        lightButton.classList.toggle("active", theme === "light");
-      }
+            function drawMatrix() {
+                const now = performance.now();
+                if (now - matrixLastFrame < matrixFrameDelay) {
+                    window.requestAnimationFrame(drawMatrix);
+                    return;
+                }
+                matrixLastFrame = now;
 
-      function resizeMatrix() {
-        const scale = window.devicePixelRatio || 1;
-        matrixCanvas.width = Math.floor(window.innerWidth * scale);
-        matrixCanvas.height = Math.floor(window.innerHeight * scale);
-        matrixCanvas.style.width = `${window.innerWidth}px`;
-        matrixCanvas.style.height = `${window.innerHeight}px`;
-        matrixCtx.setTransform(scale, 0, 0, scale, 0, 0);
+                const theme = body.getAttribute("data-theme");
+                const bgFade =
+                    theme === "dark"
+                        ? "rgba(6, 17, 29, 0.12)"
+                        : "rgba(245, 247, 248, 0.18)";
+                const glyphColor =
+                    theme === "dark"
+                        ? "rgba(126, 240, 187, 0.58)"
+                        : "rgba(0, 0, 0, 0.42)";
 
-        const columnCount = Math.ceil(window.innerWidth / matrixFontSize);
-        matrixColumns = Array.from({ length: columnCount }, () =>
-          Math.floor(Math.random() * (window.innerHeight / matrixFontSize))
-        );
-      }
+                matrixCtx.fillStyle = bgFade;
+                matrixCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
-      function drawMatrix() {
-        const now = performance.now();
-        if (now - matrixLastFrame < matrixFrameDelay) {
-          window.requestAnimationFrame(drawMatrix);
-          return;
-        }
-        matrixLastFrame = now;
+                matrixCtx.fillStyle = glyphColor;
+                matrixCtx.font = `${matrixFontSize}px "IBM Plex Mono", monospace`;
 
-        const theme = body.getAttribute("data-theme");
-        const bgFade =
-          theme === "dark"
-            ? "rgba(6, 17, 29, 0.12)"
-            : "rgba(245, 247, 248, 0.18)";
-        const glyphColor = theme === "dark" ? "rgba(126, 240, 187, 0.58)" : "rgba(0, 0, 0, 0.42)";
+                for (let i = 0; i < matrixColumns.length; i += 1) {
+                    const char =
+                        matrixChars[
+                            Math.floor(Math.random() * matrixChars.length)
+                        ];
+                    const x = i * matrixFontSize;
+                    const y = matrixColumns[i] * matrixFontSize;
 
-        matrixCtx.fillStyle = bgFade;
-        matrixCtx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+                    matrixCtx.fillText(char, x, y);
 
-        matrixCtx.fillStyle = glyphColor;
-        matrixCtx.font = `${matrixFontSize}px "IBM Plex Mono", monospace`;
+                    if (y > window.innerHeight && Math.random() > 0.988) {
+                        matrixColumns[i] = 0;
+                    } else {
+                        matrixColumns[i] += 1;
+                    }
+                }
 
-        for (let i = 0; i < matrixColumns.length; i += 1) {
-          const char = matrixChars[Math.floor(Math.random() * matrixChars.length)];
-          const x = i * matrixFontSize;
-          const y = matrixColumns[i] * matrixFontSize;
+                window.requestAnimationFrame(drawMatrix);
+            }
 
-          matrixCtx.fillText(char, x, y);
+            const savedTheme = localStorage.getItem(storageKey);
+            const initialTheme = savedTheme || "dark";
+            applyTheme(initialTheme);
+            resizeMatrix();
+            drawMatrix();
 
-          if (y > window.innerHeight && Math.random() > 0.988) {
-            matrixColumns[i] = 0;
-          } else {
-            matrixColumns[i] += 1;
-          }
-        }
+            darkButton.addEventListener("click", () => {
+                localStorage.setItem(storageKey, "dark");
+                applyTheme("dark");
+            });
 
-        window.requestAnimationFrame(drawMatrix);
-      }
+            lightButton.addEventListener("click", () => {
+                localStorage.setItem(storageKey, "light");
+                applyTheme("light");
+            });
 
-      const savedTheme = localStorage.getItem(storageKey);
-      const initialTheme = savedTheme || "dark";
-      applyTheme(initialTheme);
-      resizeMatrix();
-      drawMatrix();
-
-      darkButton.addEventListener("click", () => {
-        localStorage.setItem(storageKey, "dark");
-        applyTheme("dark");
-      });
-
-      lightButton.addEventListener("click", () => {
-        localStorage.setItem(storageKey, "light");
-        applyTheme("light");
-      });
-
-      window.addEventListener("resize", resizeMatrix);
-    </script>
-  </body>
+            window.addEventListener("resize", resizeMatrix);
+        </script>
+    </body>
 </html>
